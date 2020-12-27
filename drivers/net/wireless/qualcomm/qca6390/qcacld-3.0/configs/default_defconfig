@@ -527,12 +527,17 @@ endif
 
 # Compile all log levels by default
 CONFIG_WLAN_LOG_FATAL := y
+<<<<<<< HEAD:drivers/net/wireless/qualcomm/qca6390/qcacld-3.0/configs/default_defconfig
 CONFIG_WLAN_LOG_ERROR := y
 CONFIG_WLAN_LOG_WARN := y
 CONFIG_WLAN_LOG_INFO := y
 CONFIG_WLAN_LOG_DEBUG := y
 CONFIG_WLAN_LOG_ENTER := y
 CONFIG_WLAN_LOG_EXIT := y
+CONFIG_WLAN_LOG_ERROR := n
+CONFIG_WLAN_LOG_WARN := n
+CONFIG_WLAN_LOG_INFO := n
+/qcacld-3.0/configs/default_defconfig
 
 #Enable OL debug and wmi unified functions
 CONFIG_ATH_PERF_PWR_OFFLOAD := y
