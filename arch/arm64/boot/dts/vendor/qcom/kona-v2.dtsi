@@ -394,6 +394,7 @@
 		   <GIC_SPI 31 IRQ_TYPE_LEVEL_HIGH>,
 		   <GIC_SPI 19 IRQ_TYPE_LEVEL_HIGH>;
 	interrupt-names = "dcvsh0_int", "dcvsh1_int", "dcvsh2_int";
+<<<<<<< HEAD
 
 	qcom,cpufreq-table-0 =
 			< 300000>,
@@ -455,4 +456,6 @@
 			<2649600>,
 			<2745600>,
 			<2841600>;
+=======
+>>>>>>> 968703dc50e4 (arm64: import vendor dts)
 };

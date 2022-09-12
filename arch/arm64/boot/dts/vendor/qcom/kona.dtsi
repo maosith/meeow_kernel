@@ -347,7 +347,11 @@
 	};
 
 	chosen {
+<<<<<<< HEAD
 		bootargs = "rcu_nocbs=0-7 cgroup.memory=nokmem";
+=======
+		bootargs = "rcupdate.rcu_expedited=1 rcu_nocbs=0-7 cgroup.memory=nokmem";
+>>>>>>> 968703dc50e4 (arm64: import vendor dts)
 	};
 
 	firmware: firmware {
@@ -365,7 +369,11 @@
 					dev = "/dev/block/platform/soc/1d84000.ufshc/by-name/vendor";
 					type = "ext4";
 					mnt_flags = "ro,barrier=1,discard";
+<<<<<<< HEAD
 					fsmgr_flags = "wait,slotselect";
+=======
+					fsmgr_flags = "wait,slotselect,avb";
+>>>>>>> 968703dc50e4 (arm64: import vendor dts)
 					status = "ok";
 				};
 			};
@@ -762,7 +770,10 @@
 		clock-names = "core_clk";
 
 		qcom,coresight-jtagmm-cpu = <&CPU0>;
+<<<<<<< HEAD
 		status = "disabled";
+=======
+>>>>>>> 968703dc50e4 (arm64: import vendor dts)
 	};
 
 	jtag_mm1: jtagmm@7140000 {
@@ -774,7 +785,10 @@
 		clock-names = "core_clk";
 
 		qcom,coresight-jtagmm-cpu = <&CPU1>;
+<<<<<<< HEAD
 		status = "disabled";
+=======
+>>>>>>> 968703dc50e4 (arm64: import vendor dts)
 	};
 
 	jtag_mm2: jtagmm@7240000 {
@@ -786,7 +800,10 @@
 		clock-names = "core_clk";
 
 		qcom,coresight-jtagmm-cpu = <&CPU2>;
+<<<<<<< HEAD
 		status = "disabled";
+=======
+>>>>>>> 968703dc50e4 (arm64: import vendor dts)
 	};
 
 	jtag_mm3: jtagmm@7340000 {
@@ -798,7 +815,10 @@
 		clock-names = "core_clk";
 
 		qcom,coresight-jtagmm-cpu = <&CPU3>;
+<<<<<<< HEAD
 		status = "disabled";
+=======
+>>>>>>> 968703dc50e4 (arm64: import vendor dts)
 	};
 
 	jtag_mm4: jtagmm@7440000 {
@@ -810,7 +830,10 @@
 		clock-names = "core_clk";
 
 		qcom,coresight-jtagmm-cpu = <&CPU4>;
+<<<<<<< HEAD
 		status = "disabled";
+=======
+>>>>>>> 968703dc50e4 (arm64: import vendor dts)
 	};
 
 	jtag_mm5: jtagmm@7540000 {
@@ -822,7 +845,10 @@
 		clock-names = "core_clk";
 
 		qcom,coresight-jtagmm-cpu = <&CPU5>;
+<<<<<<< HEAD
 		status = "disabled";
+=======
+>>>>>>> 968703dc50e4 (arm64: import vendor dts)
 	};
 
 	jtag_mm6: jtagmm@7640000 {
@@ -834,7 +860,10 @@
 		clock-names = "core_clk";
 
 		qcom,coresight-jtagmm-cpu = <&CPU6>;
+<<<<<<< HEAD
 		status = "disabled";
+=======
+>>>>>>> 968703dc50e4 (arm64: import vendor dts)
 	};
 
 	jtag_mm7: jtagmm@7740000 {
@@ -846,7 +875,10 @@
 		clock-names = "core_clk";
 
 		qcom,coresight-jtagmm-cpu = <&CPU7>;
+<<<<<<< HEAD
 		status = "disabled";
+=======
+>>>>>>> 968703dc50e4 (arm64: import vendor dts)
 	};
 
 	qcom,devfreq-l3 {
@@ -5035,6 +5067,10 @@
 #include "kona-pinctrl.dtsi"
 #include "kona-smp2p.dtsi"
 #include "kona-usb.dtsi"
+<<<<<<< HEAD
+=======
+#include "kona-coresight.dtsi"
+>>>>>>> 968703dc50e4 (arm64: import vendor dts)
 #include "kona-sde.dtsi"
 #include "kona-sde-pll.dtsi"
 #include "msm-rdbg.dtsi"

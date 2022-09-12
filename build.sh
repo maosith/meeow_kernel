@@ -17,3 +17,18 @@ make -j$(nproc --all) O=out \
                       CLANG_TRIPLE=aarch64-linux-gnu- \
                       CROSS_COMPILE=/home/mao-server/Downloads/gcc-linaro-7.4.1/gcc/bin/aarch64-linux-gnu- \
                       Image.gz
+                      
+make -j4 -C $(pwd) O=$(pwd)/out $KERNEL_MAKE_ENV ARCH=arm64 CROSS_COMPILE=$BUILD_CROSS_COMPILE dtbs
+
+IMAGE="out/arch/arm64/boot/Image.gz"
+DTB_OUT="out/arch/arm64/boot/dts/vendor/qcom"
+
+cat $DTB_OUT/kona.dtb $DTB_OUT/kona-v2.dtb $DTB_OUT/kona-v2.1.dtb > AnyKernel3/dtb
+
+if [[ -f "$IMAGE" ]]; then
+	rm AnyKernel3/Image.gz > /dev/null 2>&1
+	rm AnyKernel3/*.zip > /dev/null 2>&1
+	cp $IMAGE AnyKernel3/Image.gz
+	cd AnyKernel3
+	zip -r9 meow.zip .
+fi

@@ -132,3 +132,15 @@ all.config
 
 # Kdevelop4
 *.kdev4
+<<<<<<< HEAD
+=======
+
+# fetched Android config fragments
+kernel/configs/android-*.cfg
+
+out/
+*.zip
+*.gz
+*.pyc
+*.out
+>>>>>>> 968703dc50e4 (arm64: import vendor dts)
