@@ -1933,7 +1933,10 @@ static inline long qcedev_ioctl(struct file *file,
 
 
 		}
+
 		}
+
+
 
 		break;
 
@@ -2030,7 +2033,10 @@ static inline long qcedev_ioctl(struct file *file,
 
 
 		}
+
 		}
+
+
 
 		break;
 
