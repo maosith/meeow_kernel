@@ -4867,10 +4867,13 @@ int msm_comm_qbufs_batch(struct msm_vidc_inst *inst,
 		num_buffers_queued++;
 loop_end:
 		/* Queue pending buffers till batch size */
+
 		if (num_buffers_queued == inst->batch.size) {
 			s_vpr_l(inst->sid, "%s: Queue buffers till batch size\n");
+
+		if (num_buffers_queued == inst->batch.size)
+
 			break;
-		}
 	}
 	mutex_unlock(&inst->registeredbufs.lock);
 
