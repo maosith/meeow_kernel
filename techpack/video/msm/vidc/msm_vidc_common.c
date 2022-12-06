@@ -4869,6 +4869,7 @@ loop_end:
 		/* Queue pending buffers till batch size */
 
 
+
 		if (num_buffers_queued == inst->batch.size) {
 			s_vpr_l(inst->sid, "%s: Queue buffers till batch size\n");
 
@@ -4878,8 +4879,10 @@ loop_end:
 		if (num_buffers_queued == inst->batch.size) {
 			s_vpr_e(inst->sid, "%s: Queue buffers till batch size\n");
 
+
+		if (num_buffers_queued == inst->batch.size)
+
 			break;
-		}
 	}
 	mutex_unlock(&inst->registeredbufs.lock);
 
