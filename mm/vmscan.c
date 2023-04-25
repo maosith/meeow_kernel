@@ -49,11 +49,11 @@
 #include <linux/prefetch.h>
 #include <linux/printk.h>
 #include <linux/dax.h>
-<<<<<<< HEAD
+
 #include <linux/psi.h>
-=======
+
 #include <linux/simple_lmk.h>
->>>>>>> 58ecd977a286... simple_lmk: Introduce Simple Low Memory Killer for Android
+
 
 #include <asm/tlbflush.h>
 #include <asm/div64.h>

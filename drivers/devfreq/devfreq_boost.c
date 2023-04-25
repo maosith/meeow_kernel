@@ -5,6 +5,7 @@
 
 #define pr_fmt(fmt) "devfreq_boost: " fmt
 
+#include <linux/kthread.h>
 #include <linux/devfreq_boost.h>
 #include <linux/input.h>
 #include <linux/kthread.h>
@@ -316,7 +317,7 @@ static int __init devfreq_boost_init(void)
 			pr_err("Failed to create kthread, err: %d\n", ret);
 			goto stop_kthreads;
 		}
-		set_bit(SCREEN_ON, &b->state);
+		
 	}
 
 	devfreq_boost_input_handler.private = d;
