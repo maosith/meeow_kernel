@@ -468,10 +468,8 @@ CONFIG_UH_LKM_BLOCK=y
 #
 # Control Flow Protection
 #
-#CONFIG_CFP is not set 
-#CONFIG_CFP_JOPP is not set 
-#CONFIG_CFP_JOPP_MAGIC is not set
-#CONFIG_CFP_ROPP is not set
+# CONFIG_CFP is not set 
+
 
 #
 # ARMv8.1 architectural features
