@@ -46,7 +46,7 @@
 #define WDT0_STS	0x0C
 #define WDT0_BARK_TIME	0x10
 #define WDT0_BITE_TIME	0x14
-
+#define WDOG_BITE_OFFSET_IN_SECONDS 10
 #define WDOG_ABSENT	0
 
 #define EN		0
