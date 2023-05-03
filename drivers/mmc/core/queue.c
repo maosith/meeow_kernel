@@ -116,12 +116,15 @@ static enum blk_eh_timer_return mmc_cqe_timed_out(struct request *req)
 			return BLK_EH_RESET_TIMER;
 		}
 
+
 		pr_info("%s: %s: Timeout even before req reaching LDD, completing the req. Active reqs: %d Req: %p Tag: %d\n",
 				mmc_hostname(host), __func__,
 				mmc_cqe_qcnt(mq), req, req->tag);
 		mmc_log_string(host,
 				"Timeout even before req reaching LDD,completing the req. Active reqs: %d Req: %p Tag: %d\n",
 				mmc_cqe_qcnt(mq), req, req->tag);
+
+
 		/* The request has gone already */
 		return BLK_EH_DONE;
 	default:
@@ -136,9 +139,10 @@ static enum blk_eh_timer_return mmc_mq_timed_out(struct request *req,
 	struct request_queue *q = req->q;
 	struct mmc_queue *mq = q->queuedata;
 	unsigned long flags;
-	int ret;
+	bool ignore_tout;
 
 	spin_lock_irqsave(q->queue_lock, flags);
+
 
 	if (mq->recovery_needed || !mq->use_cqe) {
 		ret = BLK_EH_RESET_TIMER;
@@ -148,7 +152,11 @@ static enum blk_eh_timer_return mmc_mq_timed_out(struct request *req,
 		ret = mmc_cqe_timed_out(req);
 	}
 
-	return ret;
+	ignore_tout = mq->recovery_needed || !mq->use_cqe;
+	spin_unlock_irqrestore(q->queue_lock, flags);
+
+
+	return ignore_tout ? BLK_EH_RESET_TIMER : mmc_cqe_timed_out(req);
 }
 
 static void mmc_mq_recovery_handler(struct work_struct *work)
@@ -202,7 +210,7 @@ static void mmc_queue_setup_discard(struct request_queue *q,
 	q->limits.discard_granularity = card->pref_erase << 9;
 	/* granularity must not be greater than max. discard */
 	if (card->pref_erase > max_discard)
-		q->limits.discard_granularity = 0;
+		q->limits.discard_granularity = SECTOR_SIZE;
 	if (mmc_can_secure_erase_trim(card))
 		blk_queue_flag_set(QUEUE_FLAG_SECERASE, q);
 }
@@ -386,11 +394,17 @@ static void mmc_setup_queue(struct mmc_queue *mq, struct mmc_card *card)
 		min(host->max_blk_count, host->max_req_size / 512));
 	blk_queue_max_segments(mq->queue, host->max_segs);
 
+
 	if (host->ops->init)
 		host->ops->init(host);
 
 	if (mmc_card_mmc(card))
+
+	if (mmc_card_mmc(card) && card->ext_csd.data_sector_size) {
+
 		block_size = card->ext_csd.data_sector_size;
+		WARN_ON(block_size != 512 && block_size != 4096);
+	}
 
 	blk_queue_logical_block_size(mq->queue, block_size);
 	blk_queue_max_segment_size(mq->queue,

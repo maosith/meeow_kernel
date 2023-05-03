@@ -1030,6 +1030,7 @@ static int qcom_glink_rx_data(struct qcom_glink *glink, size_t avail)
 			dev_err(glink->dev,
 				"no intent found for channel %s intent %d",
 				channel->name, liid);
+			ret = -ENOENT;
 			goto advance_rx;
 		}
 	}
@@ -1101,6 +1102,7 @@ static void qcom_glink_handle_intent(struct qcom_glink *glink,
 	spin_unlock_irqrestore(&glink->idr_lock, flags);
 	if (!channel) {
 		dev_err(glink->dev, "intents for non-existing channel\n");
+		qcom_glink_rx_advance(glink, ALIGN(msglen, 8));
 		return;
 	}
 
@@ -1146,6 +1148,7 @@ static int qcom_glink_rx_open_ack(struct qcom_glink *glink, unsigned int lcid)
 		dev_err(glink->dev, "Invalid open ack packet\n");
 		return -EINVAL;
 	}
+
 
 	CH_INFO(channel, "\n");
 	complete_all(&channel->open_ack);
@@ -1197,6 +1200,9 @@ static int qcom_glink_handle_signals(struct qcom_glink *glink,
 		channel->ept.sig_cb(channel->ept.rpdev, old, channel->rsigs);
 
 	CH_INFO(channel, "old:%d new:%d\n", old, channel->rsigs);
+
+	complete_all(&channel->open_ack);
+
 
 	return 0;
 }
@@ -1795,7 +1801,11 @@ static void qcom_glink_rx_close(struct qcom_glink *glink, unsigned int rcid)
 	kthread_cancel_work_sync(&channel->intent_work);
 
 	if (channel->rpdev) {
+
 		strlcpy(chinfo.name, channel->name, sizeof(chinfo.name));
+
+		strscpy_pad(chinfo.name, channel->name, sizeof(chinfo.name));
+
 		chinfo.src = RPMSG_ADDR_ANY;
 		chinfo.dst = RPMSG_ADDR_ANY;
 

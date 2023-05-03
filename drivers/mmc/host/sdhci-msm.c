@@ -1229,6 +1229,14 @@ static void sdhci_msm_set_mmc_drv_type(struct sdhci_host *host, u32 opcode,
 void sdhci_msm_mm_dbg_configure(struct sdhci_host *host, u32 mask,
 			u32 match, u32 bit_shift, u32 testbus)
 {
+
+
+	struct sdhci_host *host = mmc_priv(mmc);
+	int tuning_seq_cnt = 10;
+	u8 phase, tuned_phases[16], tuned_phase_cnt = 0;
+	int rc;
+	struct mmc_ios ios = host->mmc->ios;
+
 	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
 	struct sdhci_msm_host *msm_host = pltfm_host->priv;
 	struct platform_device *pdev = msm_host->pdev;
@@ -1443,8 +1451,20 @@ int sdhci_msm_execute_tuning(struct sdhci_host *host, u32 opcode)
 		return 0;
 
 	/*
+
 	 * Don't allow re-tuning for CRC errors observed for any commands
 	 * that are sent during tuning sequence itself.
+
+	 * Clear tuning_done flag before tuning to ensure proper
+	 * HS400 settings.
+	 */
+	msm_host->tuning_done = 0;
+
+	/*
+	 * For HS400 tuning in HS200 timing requires:
+	 * - select MCLK/2 in VENDOR_SPEC
+	 * - program MCLK to 400MHz (or nearest supported) in GCC
+
 	 */
 	if (msm_host->tuning_in_progress)
 		return 0;
@@ -1619,6 +1639,22 @@ retry:
 		sdhci_msm_set_mmc_drv_type(host, opcode, 0);
 
 	if (tuned_phase_cnt) {
+		if (tuned_phase_cnt == ARRAY_SIZE(tuned_phases)) {
+			/*
+			 * All phases valid is _almost_ as bad as no phases
+			 * valid.  Probably all phases are not really reliable
+			 * but we didn't detect where the unreliable place is.
+			 * That means we'll essentially be guessing and hoping
+			 * we get a good phase.  Better to try a few times.
+			 */
+			dev_dbg(mmc_dev(mmc), "%s: All phases valid; try again\n",
+				mmc_hostname(mmc));
+			if (--tuning_seq_cnt) {
+				tuned_phase_cnt = 0;
+				goto retry;
+			}
+		}
+
 		rc = msm_find_most_appropriate_phase(host, tuned_phases,
 							tuned_phase_cnt);
 		if (rc < 0)
@@ -5097,6 +5133,7 @@ static struct sdhci_ops sdhci_msm_ops = {
 	.hw_reset = sdhci_msm_hw_reset,
 };
 
+
 static void sdhci_set_default_hw_caps(struct sdhci_msm_host *msm_host,
 		struct sdhci_host *host)
 {
@@ -5647,6 +5684,16 @@ static int sdhci_sec_sdcard_uevent(struct device *dev, struct kobj_uevent_env *e
 
 static struct device_type sdcard_type = {
 	.uevent = sdhci_sec_sdcard_uevent,
+
+static const struct sdhci_pltfm_data sdhci_msm_pdata = {
+	.quirks = SDHCI_QUIRK_BROKEN_CARD_DETECTION |
+		  SDHCI_QUIRK_SINGLE_POWER_WRITE |
+		  SDHCI_QUIRK_CAP_CLOCK_BASE_BROKEN |
+		  SDHCI_QUIRK_MULTIBLOCK_READ_ACMD12,
+
+	.quirks2 = SDHCI_QUIRK2_PRESET_VALUE_BROKEN,
+	.ops = &sdhci_msm_ops,
+
 };
 #endif
 
@@ -6003,6 +6050,7 @@ static int sdhci_msm_probe(struct platform_device *pdev)
 		goto vreg_deinit;
 	}
 
+
 	/* Enable pwr irq interrupts */
 	sdhci_msm_writel_relaxed(INT_MASK, host,
 		msm_host_offset->CORE_PWRCTL_MASK);
@@ -6135,6 +6183,11 @@ static int sdhci_msm_probe(struct platform_device *pdev)
 	host->mmc->max_busy_timeout = 0;
 
 	msm_host->pltfm_init_done = true;
+
+
+	msm_host->mmc->caps |= MMC_CAP_WAIT_WHILE_BUSY | MMC_CAP_NEED_RSP_BUSY;
+
+	pm_runtime_get_noresume(&pdev->dev);
 
 	pm_runtime_set_active(&pdev->dev);
 	pm_runtime_enable(&pdev->dev);
